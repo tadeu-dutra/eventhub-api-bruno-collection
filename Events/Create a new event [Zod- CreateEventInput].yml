@@ -1,5 +1,5 @@
 info:
-  name: Create a new event
+  name: "Create a new event [Zod: CreateEventInput]"
   type: http
   seq: 2
 
@@ -50,6 +50,34 @@ runtime:
 
         test("Should id be a number", function() {
           expect(data.id).to.be.a("number");
+        });
+
+        // API CONTRACT SECTION ======================================
+        const { z } = require("zod");
+
+        // ==================== INPUT CONTRACT =======================
+        const CreateEventInputSchema = z.object({
+          title: z.string().min(1, 'Title is required'),
+          description: z.string().optional().default(""),
+          category: z.string(),
+          venue: z.string(),
+          city: z.string().min(1, "City is required"),
+          eventDate: z.string().datetime({ message: "Event date must be a valid ISO datetime" }),
+          price: z.union([z.number(), z.string()]),
+          totalSeats: z.union([z.number(), z.string()]),
+          imageUrl: z.string().url("Image URL must be a valid URL").optional().nullable(),
+        });
+
+        // ==================== RESPONSE CONTRACT ====================
+        test("CreateEventInput schema matches CreateEventInput contract", () => {
+          const result = CreateEventInputSchema.safeParse(req.getBody());
+
+          if (!result.success) {
+            console.error('CreateEventInputSchema validation failed:', result.error.format());
+            console.error('Full response for debugging:', JSON.stringify(res.getBody(), null, 2));
+          }
+
+          expect(result.success).to.be.true;
         });
 
 settings:

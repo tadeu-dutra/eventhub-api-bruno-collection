@@ -40,7 +40,7 @@ runtime:
           city: z.string(),
           eventDate: z.string().datetime(),
           price: z.union([z.number(), z.string()]),
-          totalSeats: z.number().int().positive(),
+          totalSeats: z.number().int("Total seats must be an integer").positive("Total seats must be at least 1"),
           availableSeats: z.number().int().nonnegative(),
           imageUrl: z.string().url().nullable().optional(),
           createdAt: z.string().datetime(),
