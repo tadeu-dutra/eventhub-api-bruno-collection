@@ -1,5 +1,5 @@
 info:
-  name: Get a single event by ID
+  name: "Get a single event by ID [Zod: Event]"
   type: http
   seq: 3
 
