@@ -31,7 +31,7 @@ jobs:
         run: |
           bru run \
             --sandbox=developer \
-            --env production \          # Change to your environment name (e.g. staging, ci)
+            --env ENV \          # Change to your environment name (e.g. staging, ci)
             --reporter-junit junit.xml \
             --reporter-json results.json
         working-directory: .            # Since your collection is in root
