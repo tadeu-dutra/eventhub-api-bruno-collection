@@ -1,0 +1,30 @@
+info:
+  name: Delete an event
+  type: http
+  seq: 2
+
+http:
+  method: DELETE
+  url: "{{BASE_URL}}/events/{{EVENT_ID}}"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Should return status code 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Should return message stating event has been deleted", function() {
+          expect(res.getBody().message).to.contain("deleted");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

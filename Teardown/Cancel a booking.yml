@@ -1,0 +1,30 @@
+info:
+  name: Cancel a booking
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: "{{BASE_URL}}/bookings/{{BOOKING_ID}}"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Should return status code 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Should return booking cancellation message", function() {
+          expect(res.getBody().message).to.contain("cancelled");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

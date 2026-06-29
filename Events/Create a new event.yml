@@ -1,0 +1,59 @@
+info:
+  name: Create a new event
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{BASE_URL}}/events"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  body:
+    type: json
+    data: |-
+      {
+        "title": "{{$randomCatchPhrase}} Summit 2026",
+        "description": "{{$randomWords}}",
+        "category": "Conference",
+        "venue": "{{$randomCompanyName}} Center",
+        "city": "{{$randomCity}}",
+        "eventDate": "{{$randomDateFuture}}",
+        "price": "{{CUSTOM_PRICE}}",
+        "totalSeats": "{{CUSTOM_SEATS}}",
+        "imageUrl": "{{$randomImageUrl}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const randomPrice = Math.floor(Math.random() * (5000 - 100 + 1)) + 500;
+        const randomSeats = Math.floor(Math.random() * (1000 - 50 + 1)) + 50;
+
+        bru.setVar("CUSTOM_PRICE", randomPrice);
+        bru.setVar("CUSTOM_SEATS", randomSeats);
+    - type: after-response
+      code: bru.setVar("EVENT_ID", Number(res.getBody().data.id));
+    - type: tests
+      code: |-
+        test("Should return 201 Created", function() {
+          expect(res.getStatus()).to.equal(201);
+        });
+
+        const data = res.getBody().data;
+
+        test("Should return an object", function() {
+          expect(data).to.be.an("object");
+        });
+
+        test("Should id be a number", function() {
+          expect(data.id).to.be.a("number");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

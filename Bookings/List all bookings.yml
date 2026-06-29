@@ -1,0 +1,40 @@
+info:
+  name: List all bookings
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/bookings"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: bru.setVar("BOOKINGS_COUNT", res.getBody().data.length);
+    - type: tests
+      code: |-
+        test("Should return status code 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Should contain a valid pagination", function() {
+          const pagination = res.getBody().pagination;
+          expect(pagination.totalPages).to.be.a("number");
+          expect(pagination.totalPages).to.be.at.least(1);
+        });
+
+        test("Should return an array of items", function() {
+          const data = res.getBody();
+          expect(data.data).to.be.an("array");
+          expect(data.data.length).to.be.above(0);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

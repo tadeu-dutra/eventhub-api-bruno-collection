@@ -1,0 +1,51 @@
+info:
+  name: Update an event
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{BASE_URL}}/events/{{EVENT_ID}}"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  body:
+    type: json
+    data: |-
+      {
+        "title": "{{$randomCatchPhrase}} Summit 2026",
+        "description": "{{$randomWords}}",
+        "category": "Conference",
+        "venue": "{{$randomCompanyName}} Center",
+        "city": "{{$randomCity}}",
+        "eventDate": "{{$randomDateFuture}}",
+        "price": "{{CUSTOM_PRICE}}",
+        "totalSeats": "{{CUSTOM_SEATS}}",
+        "imageUrl": "{{$randomImageUrl}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const randomPrice = Math.floor(Math.random() * (5000 - 100 + 1)) + 500;
+        const randomSeats = Math.floor(Math.random() * (1000 - 50 + 1)) + 50;
+
+        bru.setVar("CUSTOM_PRICE", randomPrice);
+        bru.setVar("CUSTOM_SEATS", randomSeats);
+    - type: tests
+      code: |-
+        test("Should return status code 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Should return updated successfully message", function() {
+          expect(res.getBody().message).to.contain("updated successfully");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

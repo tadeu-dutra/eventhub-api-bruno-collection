@@ -1,0 +1,55 @@
+info:
+  name: "Get the currently authenticated user [Zod: MeResponse]"
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/auth/me"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Should return status code 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Should return currently authenticated user email", function() {
+          expect(res.getBody().user).to.have.property("email");
+        });
+
+        // API CONTRACT SECTION ======================================
+        const { z } = require("zod");
+
+        // ==================== RESPONSE CONTRACT ====================
+        const UserSchema = z.object({
+          userId: z.number().int().positive(),
+          email: z.string().email(),
+        });
+
+        const MeResponseSchema = z.object({
+          success: z.literal(true),
+          user: UserSchema,
+        });
+
+        test("MeResponse schema matches MeResponse contract", () => {
+          const result = MeResponseSchema.safeParse(res.getBody());
+
+          if (!result.success) {
+            console.error('MeResponse validation failed:', result.error.format());
+            console.error('Full response for debugging:', JSON.stringify(res.getBody(), null, 2));
+          }
+
+          expect(result.success).to.be.true;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

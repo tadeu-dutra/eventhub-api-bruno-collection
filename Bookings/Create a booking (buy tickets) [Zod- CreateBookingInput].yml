@@ -1,0 +1,79 @@
+info:
+  name: "Create a booking (buy tickets) [Zod: CreateBookingInput]"
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{BASE_URL}}/bookings"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  body:
+    type: json
+    data: |-
+      {
+        "eventId": {{EVENT_ID}},
+        "customerName": "{{$randomFullName}}",
+        "customerEmail": "{{$randomEmail}}",
+        "customerPhone": "{{$randomPhoneNumber}}",
+        "quantity": {{FAKE_QUANTITY}}
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const randomQuantity = Math.floor(Math.random() * 5) + 1;
+        bru.setVar("FAKE_QUANTITY", randomQuantity);
+    - type: after-response
+      code: |-
+        const response = res.getBody().data;
+        bru.setVar("BOOKING_ID", response.id);
+        bru.setVar("BOOKING_REF", response.bookingRef);
+    - type: tests
+      code: |-
+        test("Should return 201 Created", function() {
+          expect(res.getStatus()).to.equal(201);
+        });
+
+        const data = res.getBody().data;
+
+        test("Should return an object", function() {
+          expect(data).to.be.an("object");
+        });
+
+        test("Should id be a number", function() {
+          expect(data.id).to.be.a("number");
+        });
+
+        // API CONTRACT SECTION ======================================
+        const { z } = require("zod");
+
+        // ==================== INPUT CONTRACT =======================
+        const CreateBookingInputSchema = z.object({
+          eventId: z.number().int('Event ID must be an integer').positive('Event ID must be positive'),
+          customerName: z.string().min(2, 'Customer Name must be at least 2 characters'),
+          customerEmail: z.string().email('Please provide a valid email address'),
+          customerPhone: z.string().min(10, 'Phone number must be at least 10 characters'),
+          quantity: z.number().int('Quantity must be an integer').min(1, 'Quantity must be at least 1').max(10, 'Quantity cannot exceed 10')
+        });
+
+        // ==================== RESPONSE CONTRACT ====================
+        test("CreateBookingInput schema matches CreateBookingInput contract", () => {
+          const result = CreateBookingInputSchema.safeParse(req.getBody());
+
+          if (!result.success) {
+            console.error('CreateBookingInputSchema validation failed:', result.error.format());
+            console.error('Full response for debugging:', JSON.stringify(res.getBody(), null, 2));
+          }
+
+          expect(result.success).to.be.true;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

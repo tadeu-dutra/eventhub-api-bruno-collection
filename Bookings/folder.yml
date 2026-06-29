@@ -1,0 +1,11 @@
+info:
+  name: Bookings
+  type: folder
+  seq: 3
+
+request:
+  auth: inherit
+
+docs:
+  content: Authentication — register, login, and token validation
+  type: text/markdown

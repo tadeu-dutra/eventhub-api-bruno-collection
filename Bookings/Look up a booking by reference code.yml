@@ -1,0 +1,37 @@
+info:
+  name: Look up a booking by reference code
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/bookings/ref/{{BOOKING_REF}}"
+  headers:
+    - name: Authorization
+      value: Bearer {{TOKEN}}
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Should return status code 200", function() {
+          expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Should return the booking reference code", function() {
+          expect(res.getBody().data).to.have.property("bookingRef");
+        });
+
+        test("Should return confirmed status", function() {
+          expect(res.getBody().data).to.have.property("status");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,53 @@
+name: EventHub API Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: Run EventHub API Collection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Bruno CLI
+        run: npm install -g @usebruno/cli
+
+      - name: Run EventHub API Tests
+        run: |
+          bru run \
+            --sandbox=developer \
+            --env production \          # Change to your environment name (e.g. staging, ci)
+            --reporter-junit junit.xml \
+            --reporter-json results.json
+        working-directory: .            # Since your collection is in root
+
+      - name: Publish Test Report
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: junit.xml
+          check_name: "EventHub API Test Results"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bruno-test-results
+          path: |
+            junit.xml
+            results.json
