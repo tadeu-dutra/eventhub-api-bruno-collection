@@ -1,4 +1,4 @@
-name: ENV
+name: development
 variables:
   - name: BASE_URL
     value: https://api.eventhub.rahulshettyacademy.com/api
