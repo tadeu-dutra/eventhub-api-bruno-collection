@@ -28,6 +28,40 @@ runtime:
         ;
         });
 
+        // API CONTRACT SECTION ======================================
+        const { z } = require("zod");
+
+        const EventSchema = z.object({
+          id: z.number().int().positive(),
+          title: z.string().min(1, 'Title is required'),
+          description: z.string(),
+          category: z.string(),
+          venue: z.string(),
+          city: z.string(),
+          eventDate: z.string().datetime(),
+          price: z.union([z.number(), z.string()]),
+          totalSeats: z.number().int().positive(),
+          availableSeats: z.number().int().nonnegative(),
+          imageUrl: z.string().url().nullable().optional(),
+          createdAt: z.string().datetime(),
+          updatedAt: z.string().datetime()
+        });
+        const ResponseSchema = z.object({
+          success: z.boolean(),
+          data: EventSchema
+        });
+
+        test("Event schema matches Event contract", () => {
+          const result = ResponseSchema.safeParse(res.getBody());
+
+          if (!result.success) {
+            console.error('Event validation failed:', result.error.format());
+            console.error('Full response for debugging:', JSON.stringify(res.getBody(), null, 2));
+          }
+
+          expect(result.success).to.be.true;
+        });
+
 settings:
   encodeUrl: true
   timeout: 0
