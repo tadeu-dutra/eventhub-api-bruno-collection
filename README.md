@@ -9,11 +9,10 @@ A comprehensive API testing suite for the EventHub platform built with Bruno, fe
 
 This Bruno collection provides production-ready API testing for the EventHub platform with:
 
-- **🔒 Contract-First Testing**: Zod schema validation for all requests and responses
-- **🚀 CI/CD Integration**: GitHub Actions workflow with automated test execution and Allure reporting
 - **📊 Comprehensive Coverage**: Complete CRUD operations for events, bookings, and user management
 - **🔧 Dynamic Testing**: Automated data generation and environment variable management
-- **📈 Interactive Reports**: Allure-based test reporting with detailed metrics and visualizations
+- **🔒 Contract Testing**: Zod schema validation
+- **🚀 CI/CD Integration**: GitHub Actions workflow with automated test execution and Allure reporting
 
 ## 🛠️ Technology Stack
 
