@@ -2,7 +2,7 @@
 
 A comprehensive API testing suite for the EventHub platform built with Bruno, featuring contract-first validation using Zod schemas, automated testing, and detailed reporting.
 
-[![Allure Report](https://shields.io)](https://tadeu-dutra.github.io/eventhub-api-bruno-collection/)
+[![Allure Report]](https://tadeu-dutra.github.io/eventhub-api-bruno-collection/)
 
 
 ## 🎯 Overview
