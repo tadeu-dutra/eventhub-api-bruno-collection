@@ -7,4 +7,7 @@ node_modules
 # OS files
 .DS_Store
 Thumbs.db
+
+# reports
 results.json
+junit.xml
