@@ -23,30 +23,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
 
       - name: Install Bruno CLI
         run: npm install -g @usebruno/cli@3.5.0
-
-      - name: Debug workspace
-        run: |
-          echo "=== Bruno Version ==="
-          bru --version
-
-          echo
-          echo "=== Current Directory ==="
-          pwd
-
-          echo
-          echo "=== Environments ==="
-          ls -R environments
-
-          echo
-          echo "=== Collection File ==="
-          cat opencollection.yml
 
       - name: Run EventHub API Tests
         run: |
