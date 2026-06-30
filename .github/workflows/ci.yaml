@@ -49,9 +49,9 @@ jobs:
 
       - name: Run EventHub API Tests
         run: |
-          bru run . \
-            --sandbox developer \
+          bru run \
             --env development \
+            --sandbox developer \
             --reporter-junit junit.xml \
             --reporter-json results.json
 
