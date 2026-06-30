@@ -27,6 +27,14 @@ jobs:
         with:
           node-version: 22
 
+      # Allure CLI requires Java to process JUnit XML files
+      - name: Setup Java (For Allure)
+        if: always()
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Install dependencies
         run: npm ci
 
@@ -41,40 +49,19 @@ jobs:
             --reporter-junit junit.xml \
             --reporter-json results.json
 
-      - name: Publish Test Report
+      # Installs Allure directly onto the Ubuntu runner without Docker
+      - name: Install Allure CLI
         if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v2.18.0
-        with:
-          files: junit.xml
-          check_name: EventHub API Test Results
+        run: |
+          npm install -g allure-commandline --save-dev
 
-      # FIX 1: Create allure-results directory and move junit.xml into it
-      - name: Structure Allure Results
+      - name: Generate Allure Report
         if: always()
         run: |
           mkdir -p allure-results
           cp junit.xml allure-results/
+          allure generate allure-results --clean -o allure-report
 
-      # FIX 2: Check out gh-pages history branch safely to prevent ENOENT errors
-      - name: Get Allure History
-        if: always()
-        continue-on-error: true
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Generate Allure Report
-        if: always()
-        uses: simple-elf/allure-report-action@v1.11
-        id: allure-report
-        with:
-          allure_results: allure-results
-          allure_report: allure-report
-          allure_history: allure-history
-          keep_reports: 20
-
-      # FIX 3: Replaced peaceiris docker action with official native action
       - name: Deploy Allure Report to GitHub Pages
         if: always()
         uses: JamesIves/github-pages-deploy-action@v4.6.0
