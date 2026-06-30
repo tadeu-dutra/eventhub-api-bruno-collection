@@ -41,7 +41,7 @@ jobs:
 
       - name: Publish Test Report
         if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2.18.0
         with:
           files: junit.xml
           check_name: EventHub API Test Results
